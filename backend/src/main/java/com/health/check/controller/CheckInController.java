@@ -32,6 +32,7 @@ public class CheckInController {
         String username = authentication.getName();
         return userService.getByUsername(username).getId();
 
+
     }
 
     @PostMapping
