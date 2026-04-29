@@ -157,12 +157,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         LocalDate firstDay = yearMonth.atDay(1);
         LocalDate lastDay = yearMonth.atEndOfMonth();
 
-        LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
-        checkInWrapper.eq(CheckIn::getUserId, userId)
-                .between(CheckIn::getCheckInDate, firstDay, lastDay)
-                .eq(CheckIn::getDeleted, 0)
-                .groupBy(CheckIn::getCheckInDate);
-        int checkInDays = checkInService.listObjs(checkInWrapper).size();
+        int checkInDays = countDistinctCheckInDates(userId, firstDay, lastDay);
         summary.setCheckInDays(checkInDays);
 
         List<StreakStat> stats = streakStatService.getByUserId(userId);
@@ -185,6 +180,21 @@ public class StatisticsServiceImpl implements StatisticsService {
         summary.setTypeStatistics(typeStatistics);
 
         return summary;
+    }
+
+    private int countDistinctCheckInDates(Long userId, LocalDate firstDay, LocalDate lastDay) {
+        LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
+        checkInWrapper.eq(CheckIn::getUserId, userId)
+                .between(CheckIn::getCheckInDate, firstDay, lastDay)
+                .eq(CheckIn::getDeleted, 0)
+                .orderByAsc(CheckIn::getCheckInDate);
+
+        List<CheckIn> checkIns = checkInService.list(checkInWrapper);
+        
+        return (int) checkIns.stream()
+                .map(CheckIn::getCheckInDate)
+                .distinct()
+                .count();
     }
 
     private List<Map<String, Object>> getDailyDetails(Long userId, LocalDate firstDay, LocalDate lastDay) {

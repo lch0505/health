@@ -69,10 +69,7 @@ CREATE TABLE IF NOT EXISTS streak_stat (
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='连续打卡统计表';
 
--- 初始化管理员账号（密码：admin123，已加密）
-INSERT INTO user (username, password, nickname, role, status) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5E', '系统管理员', 'admin', 1);
-
--- 初始化普通用户账号（密码：user123，已加密）
-INSERT INTO user (username, password, nickname, role, status) VALUES
-('user', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5E', '普通用户', 'user', 1);
+-- 注意：用户账号会在应用启动时由 DataInitializer 自动创建
+-- 默认账号：
+-- 管理员：admin / admin123
+-- 普通用户：user / user123
