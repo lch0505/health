@@ -63,6 +63,18 @@ const routes = [
         meta: { title: '月度总结' }
       },
       {
+        path: 'points',
+        name: 'PointsCenter',
+        component: () => import('@/views/PointsCenter.vue'),
+        meta: { title: '积分中心' }
+      },
+      {
+        path: 'achievement',
+        name: 'AchievementWall',
+        component: () => import('@/views/AchievementWall.vue'),
+        meta: { title: '勋章墙' }
+      },
+      {
         path: 'profile',
         name: 'Profile',
         component: () => import('@/views/Profile.vue'),
@@ -111,6 +123,18 @@ const routes = [
         name: 'MoodRecordManagement',
         component: () => import('@/views/admin/MoodRecordManagement.vue'),
         meta: { title: '情绪记录管理' }
+      },
+      {
+        path: 'points',
+        name: 'PointsManagement',
+        component: () => import('@/views/admin/PointsManagement.vue'),
+        meta: { title: '积分管理' }
+      },
+      {
+        path: 'achievement',
+        name: 'AchievementManagement',
+        component: () => import('@/views/admin/AchievementManagement.vue'),
+        meta: { title: '勋章管理' }
       }
     ]
   }

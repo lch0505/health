@@ -40,6 +40,14 @@
           <el-icon><PieChart /></el-icon>
           <span>月度总结</span>
         </el-menu-item>
+        <el-menu-item index="/points">
+          <el-icon><Coin /></el-icon>
+          <span>积分中心</span>
+        </el-menu-item>
+        <el-menu-item index="/achievement">
+          <el-icon><Trophy /></el-icon>
+          <span>勋章墙</span>
+        </el-menu-item>
         <el-menu-item index="/profile">
           <el-icon><User /></el-icon>
           <span>个人中心</span>

@@ -99,3 +99,55 @@ export function updateMoodRecord(id, data) {
 export function deleteMoodRecord(id) {
   return request.delete(`/admin/mood-record/${id}`)
 }
+
+export function getUserPointsList(params) {
+  return request.get('/admin/points/user/list', { params })
+}
+
+export function getUserPoints(userId) {
+  return request.get(`/admin/points/user/${userId}`)
+}
+
+export function getAdminPointsRecordList(params) {
+  return request.get('/admin/points/record/list', { params })
+}
+
+export function adjustPoints(data) {
+  return request.post('/admin/points/adjust', null, { params: data })
+}
+
+export function getAchievementList(params) {
+  return request.get('/admin/achievement/list', { params })
+}
+
+export function getAchievementDetail(id) {
+  return request.get(`/admin/achievement/${id}`)
+}
+
+export function createAchievement(data) {
+  return request.post('/admin/achievement', data)
+}
+
+export function updateAchievement(id, data) {
+  return request.put(`/admin/achievement/${id}`, data)
+}
+
+export function deleteAchievement(id) {
+  return request.delete(`/admin/achievement/${id}`)
+}
+
+export function updateAchievementStatus(id, status) {
+  return request.put(`/admin/achievement/status/${id}?status=${status}`)
+}
+
+export function getUserAchievementList(params) {
+  return request.get('/admin/achievement/user-record/list', { params })
+}
+
+export function grantAchievement(userId, achievementId) {
+  return request.post('/admin/achievement/grant', null, { params: { userId, achievementId } })
+}
+
+export function revokeUserAchievement(id) {
+  return request.delete(`/admin/achievement/user-record/${id}`)
+}

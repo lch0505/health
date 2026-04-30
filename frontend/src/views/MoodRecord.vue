@@ -19,7 +19,7 @@
 
       <div v-else class="mood-display">
         <div class="mood-icon" :class="getMoodIconClass(todayRecord.moodType)">
-          <el-icon :size="80">{{ getMoodIcon(todayRecord.moodType) }}</el-icon>
+          <component :is="getMoodIcon(todayRecord.moodType)" :size="80" />
         </div>
         <div class="mood-info">
           <div class="mood-type">
@@ -60,9 +60,7 @@
         <el-table-column prop="moodType" label="心情" width="150">
           <template #default="{ row }">
             <div class="mood-cell">
-              <el-icon class="mood-icon-small" :class="getMoodIconClass(row.moodType)">
-                {{ getMoodIcon(row.moodType) }}
-              </el-icon>
+              <component :is="getMoodIcon(row.moodType)" class="mood-icon-small" />
               <el-tag :type="getMoodTag(row.moodType)">
                 {{ getMoodName(row.moodType) }}
               </el-tag>
@@ -107,7 +105,7 @@
               :class="{ active: form.moodType === mood.value }"
               @click="form.moodType = mood.value"
             >
-              <el-icon :size="40" class="mood-option-icon">{{ getMoodIcon(mood.value) }}</el-icon>
+              <component :is="getMoodIcon(mood.value)" :size="40" class="mood-option-icon" />
               <span class="mood-option-label">{{ mood.label }}</span>
             </div>
           </div>
