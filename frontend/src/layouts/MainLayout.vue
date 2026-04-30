@@ -48,6 +48,10 @@
           <el-icon><Trophy /></el-icon>
           <span>勋章墙</span>
         </el-menu-item>
+        <el-menu-item index="/announcement">
+          <el-icon><Bell /></el-icon>
+          <span>公告通知</span>
+        </el-menu-item>
         <el-menu-item index="/profile">
           <el-icon><User /></el-icon>
           <span>个人中心</span>

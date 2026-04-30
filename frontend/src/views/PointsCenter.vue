@@ -34,6 +34,27 @@
 
     <el-card class="mt-20">
       <template #header>
+        <span>积分规则说明</span>
+      </template>
+
+      <div class="points-rules">
+        <div
+          v-for="rule in pointsConfigList"
+          :key="rule.id"
+          class="rule-item"
+        >
+          <div class="rule-header">
+            <span class="rule-name">{{ rule.pointsTypeName }}</span>
+            <span class="rule-points">+{{ rule.points }} 积分</span>
+          </div>
+          <div class="rule-desc">{{ rule.description || '暂无说明' }}</div>
+        </div>
+        <el-empty v-if="pointsConfigList.length === 0" description="暂无积分规则" />
+      </div>
+    </el-card>
+
+    <el-card class="mt-20">
+      <template #header>
         <div class="card-header">
           <span>积分记录</span>
           <el-date-picker
@@ -84,7 +105,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getPointsSummary, getPointsRecordList } from '@/api/points'
+import { getPointsSummary, getPointsRecordList, getPointsConfigList } from '@/api/points'
 
 const loading = ref(false)
 const dateRange = ref([])
@@ -94,6 +115,7 @@ const pointsSummary = reactive({
   usedPoints: 0,
   newAchievements: 0
 })
+const pointsConfigList = ref([])
 const recordList = ref([])
 const pagination = reactive({
   page: 1,
@@ -110,6 +132,17 @@ const fetchSummary = async () => {
     }
   } catch (error) {
     console.error('获取积分汇总失败', error)
+  }
+}
+
+const fetchPointsConfig = async () => {
+  try {
+    const res = await getPointsConfigList()
+    if (res.code === 200) {
+      pointsConfigList.value = res.data || []
+    }
+  } catch (error) {
+    console.error('获取积分配置失败', error)
   }
 }
 
@@ -144,6 +177,7 @@ const handleDateChange = () => {
 
 onMounted(() => {
   fetchSummary()
+  fetchPointsConfig()
   fetchRecords()
 })
 </script>
@@ -230,5 +264,48 @@ onMounted(() => {
 
 .mt-20 {
   margin-top: 20px;
+}
+
+.points-rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+
+  .rule-item {
+    border: 1px solid #ebeef5;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s;
+
+    &:hover {
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      border-color: #409eff;
+    }
+
+    .rule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+
+      .rule-name {
+        font-size: 16px;
+        font-weight: 500;
+        color: #303133;
+      }
+
+      .rule-points {
+        font-size: 16px;
+        font-weight: bold;
+        color: #67c23a;
+      }
+    }
+
+    .rule-desc {
+      font-size: 13px;
+      color: #909399;
+      line-height: 1.5;
+    }
+  }
 }
 </style>

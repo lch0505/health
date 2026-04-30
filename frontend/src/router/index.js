@@ -79,6 +79,12 @@ const routes = [
         name: 'Profile',
         component: () => import('@/views/Profile.vue'),
         meta: { title: '个人中心' }
+      },
+      {
+        path: 'announcement',
+        name: 'Announcement',
+        component: () => import('@/views/Announcement.vue'),
+        meta: { title: '公告通知' }
       }
     ]
   },
@@ -135,6 +141,18 @@ const routes = [
         name: 'AchievementManagement',
         component: () => import('@/views/admin/AchievementManagement.vue'),
         meta: { title: '勋章管理' }
+      },
+      {
+        path: 'points-config',
+        name: 'PointsConfigManagement',
+        component: () => import('@/views/admin/PointsConfigManagement.vue'),
+        meta: { title: '积分规则配置' }
+      },
+      {
+        path: 'announcement',
+        name: 'AnnouncementManagement',
+        component: () => import('@/views/admin/AnnouncementManagement.vue'),
+        meta: { title: '公告管理' }
       }
     ]
   }
