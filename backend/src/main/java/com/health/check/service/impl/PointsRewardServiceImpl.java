@@ -8,6 +8,7 @@ import com.health.check.enums.CheckInType;
 import com.health.check.enums.PointsType;
 import com.health.check.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ public class PointsRewardServiceImpl implements PointsRewardService {
     @Autowired
     private HealthRecordService healthRecordService;
 
+    @Lazy
     @Autowired
     private CheckInService checkInService;
 
