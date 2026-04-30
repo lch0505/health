@@ -2,31 +2,23 @@ package com.health.check.service.impl;
 
 import com.health.check.entity.Achievement;
 import com.health.check.entity.HealthRecord;
-import com.health.check.entity.StreakStat;
 import com.health.check.entity.UserAchievement;
 import com.health.check.enums.AchievementCode;
 import com.health.check.enums.CheckInType;
 import com.health.check.enums.PointsType;
-import com.health.check.enums.RequirementType;
 import com.health.check.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 public class PointsRewardServiceImpl implements PointsRewardService {
 
     @Autowired
     private UserPointsService userPointsService;
-
-    @Autowired
-    private StreakStatService streakStatService;
 
     @Autowired
     private AchievementService achievementService;

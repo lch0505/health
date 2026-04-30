@@ -2,6 +2,7 @@ package com.health.check.vo;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
