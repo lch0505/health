@@ -24,6 +24,18 @@
           <el-icon><Document /></el-icon>
           <span>健康记录</span>
         </el-menu-item>
+        <el-menu-item index="/admin/vital-sign">
+          <el-icon><TrendCharts /></el-icon>
+          <span>体征数据</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/diet-record">
+          <el-icon><Bowl /></el-icon>
+          <span>饮食记录</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/mood-record">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>情绪记录</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>

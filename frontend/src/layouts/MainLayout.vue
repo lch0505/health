@@ -24,6 +24,18 @@
           <el-icon><Document /></el-icon>
           <span>健康记录</span>
         </el-menu-item>
+        <el-menu-item index="/vital-sign">
+          <el-icon><TrendCharts /></el-icon>
+          <span>体征数据</span>
+        </el-menu-item>
+        <el-menu-item index="/diet-record">
+          <el-icon><Bowl /></el-icon>
+          <span>饮食记录</span>
+        </el-menu-item>
+        <el-menu-item index="/mood-record">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>情绪管理</span>
+        </el-menu-item>
         <el-menu-item index="/monthly-summary">
           <el-icon><PieChart /></el-icon>
           <span>月度总结</span>
