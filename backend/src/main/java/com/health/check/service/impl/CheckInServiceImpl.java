@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.CheckInDTO;
 import com.health.check.entity.CheckIn;
 import com.health.check.entity.StreakStat;
+import com.health.check.enums.DeletedStatus;
+import com.health.check.enums.RecordStatus;
+import com.health.check.enums.ResponseCode;
 import com.health.check.exception.BusinessException;
 import com.health.check.mapper.CheckInMapper;
 import com.health.check.service.CheckInService;
@@ -29,7 +32,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
         LocalDate today = LocalDate.now();
 
         if (hasCheckedInToday(userId, checkInDTO.getCheckInType())) {
-            throw new BusinessException(400, "今天已经打过卡了");
+            throw new BusinessException(ResponseCode.CHECK_IN_EXISTS);
         }
 
         CheckIn checkIn = new CheckIn();
@@ -37,7 +40,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
         checkIn.setCheckInDate(today);
         checkIn.setCheckInTime(LocalDateTime.now());
         checkIn.setCheckInType(checkInDTO.getCheckInType());
-        checkIn.setStatus(1);
+        checkIn.setStatus(RecordStatus.COMPLETED.getCode());
         checkIn.setRemark(checkInDTO.getRemark());
 
         save(checkIn);
@@ -86,7 +89,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
                 .eq(CheckIn::getUserId, userId)
                 .eq(CheckIn::getCheckInDate, today)
                 .eq(CheckIn::getCheckInType, checkInType)
-                .eq(CheckIn::getDeleted, 0)
+                .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .last("LIMIT 1"));
     }
 
@@ -109,7 +112,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
             wrapper.le(CheckIn::getCheckInDate, endDate);
         }
 
-        wrapper.eq(CheckIn::getDeleted, 0)
+        wrapper.eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .orderByDesc(CheckIn::getCheckInDate)
                 .orderByDesc(CheckIn::getCheckInTime);
 
@@ -137,7 +140,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
             wrapper.le(CheckIn::getCheckInDate, endDate);
         }
 
-        wrapper.eq(CheckIn::getDeleted, 0)
+        wrapper.eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .orderByDesc(CheckIn::getCheckInDate)
                 .orderByDesc(CheckIn::getCheckInTime);
 

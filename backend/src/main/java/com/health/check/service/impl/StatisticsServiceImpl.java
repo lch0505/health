@@ -1,9 +1,12 @@
 package com.health.check.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.health.check.common.constants.StatisticsConstants;
 import com.health.check.entity.CheckIn;
 import com.health.check.entity.HealthRecord;
 import com.health.check.entity.StreakStat;
+import com.health.check.enums.DeletedStatus;
+import com.health.check.enums.RecordStatus;
 import com.health.check.service.CheckInService;
 import com.health.check.service.HealthRecordService;
 import com.health.check.service.StatisticsService;
@@ -55,15 +58,15 @@ public class StatisticsServiceImpl implements StatisticsService {
         LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
         checkInWrapper.eq(CheckIn::getUserId, userId)
                 .eq(CheckIn::getCheckInDate, today)
-                .eq(CheckIn::getDeleted, 0);
+                .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode());
         int todayCheckInCount = (int) checkInService.count(checkInWrapper);
         dashboard.setTodayCheckInCount(todayCheckInCount);
 
         LambdaQueryWrapper<HealthRecord> recordWrapper = new LambdaQueryWrapper<>();
         recordWrapper.eq(HealthRecord::getUserId, userId)
                 .eq(HealthRecord::getRecordDate, today)
-                .eq(HealthRecord::getStatus, 1)
-                .eq(HealthRecord::getDeleted, 0);
+                .eq(HealthRecord::getStatus, RecordStatus.COMPLETED.getCode())
+                .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode());
         int todayCompletedRecords = (int) healthRecordService.count(recordWrapper);
         dashboard.setTodayCompletedRecords(todayCompletedRecords);
 
@@ -80,8 +83,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         LocalDate today = LocalDate.now();
         List<Map<String, Object>> result = new ArrayList<>();
 
-        for (int i = 0; i < 7; i++) {
-            LocalDate date = today.minusDays(6 - i);
+        for (int i = 0; i < StatisticsConstants.WEEK_DAYS; i++) {
+            LocalDate date = today.minusDays(StatisticsConstants.WEEK_DAYS - 1 - i);
             Map<String, Object> dayData = new HashMap<>();
             dayData.put("date", date.format(DateTimeFormatter.ofPattern("MM-dd")));
             dayData.put("fullDate", date.toString());
@@ -89,7 +92,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             LambdaQueryWrapper<CheckIn> wrapper = new LambdaQueryWrapper<>();
             wrapper.eq(CheckIn::getUserId, userId)
                     .eq(CheckIn::getCheckInDate, date)
-                    .eq(CheckIn::getDeleted, 0);
+                    .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode());
             int count = (int) checkInService.count(wrapper);
             dayData.put("checkInCount", count);
             dayData.put("hasCheckIn", count > 0);
@@ -104,8 +107,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         LocalDate today = LocalDate.now();
         List<Map<String, Object>> result = new ArrayList<>();
 
-        String[] types = {"wake_up", "sleep", "exercise", "water", "sleep_early"};
-        String[] typeNames = {"起床", "睡觉", "运动", "饮水", "早睡"};
+        String[] types = StatisticsConstants.ALL_TYPES;
+        String[] typeNames = StatisticsConstants.ALL_TYPE_NAMES;
 
         for (int i = 0; i < types.length; i++) {
             Map<String, Object> typeData = new HashMap<>();
@@ -113,13 +116,13 @@ public class StatisticsServiceImpl implements StatisticsService {
             typeData.put("typeName", typeNames[i]);
 
             int weekCount = 0;
-            for (int j = 0; j < 7; j++) {
+            for (int j = 0; j < StatisticsConstants.WEEK_DAYS; j++) {
                 LocalDate date = today.minusDays(j);
                 LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
                 checkInWrapper.eq(CheckIn::getUserId, userId)
                         .eq(CheckIn::getCheckInDate, date)
                         .eq(CheckIn::getCheckInType, types[i])
-                        .eq(CheckIn::getDeleted, 0);
+                        .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode());
                 if (checkInService.count(checkInWrapper) > 0) {
                     weekCount++;
                     continue;
@@ -129,14 +132,14 @@ public class StatisticsServiceImpl implements StatisticsService {
                 recordWrapper.eq(HealthRecord::getUserId, userId)
                         .eq(HealthRecord::getRecordDate, date)
                         .eq(HealthRecord::getRecordType, types[i])
-                        .eq(HealthRecord::getStatus, 1)
-                        .eq(HealthRecord::getDeleted, 0);
+                        .eq(HealthRecord::getStatus, RecordStatus.COMPLETED.getCode())
+                        .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode());
                 if (healthRecordService.count(recordWrapper) > 0) {
                     weekCount++;
                 }
             }
             typeData.put("weekCount", weekCount);
-            typeData.put("completionRate", (double) weekCount / 7 * 100);
+            typeData.put("completionRate", (double) weekCount / StatisticsConstants.WEEK_DAYS * 100);
 
             result.add(typeData);
         }
@@ -186,7 +189,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
         checkInWrapper.eq(CheckIn::getUserId, userId)
                 .between(CheckIn::getCheckInDate, firstDay, lastDay)
-                .eq(CheckIn::getDeleted, 0)
+                .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .orderByAsc(CheckIn::getCheckInDate);
 
         List<CheckIn> checkIns = checkInService.list(checkInWrapper);
@@ -209,20 +212,20 @@ public class StatisticsServiceImpl implements StatisticsService {
             LambdaQueryWrapper<CheckIn> checkInWrapper = new LambdaQueryWrapper<>();
             checkInWrapper.eq(CheckIn::getUserId, userId)
                     .eq(CheckIn::getCheckInDate, date)
-                    .eq(CheckIn::getDeleted, 0);
+                    .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode());
             List<CheckIn> checkIns = checkInService.list(checkInWrapper);
             dayData.put("checkIns", checkIns);
 
             LambdaQueryWrapper<HealthRecord> recordWrapper = new LambdaQueryWrapper<>();
             recordWrapper.eq(HealthRecord::getUserId, userId)
                     .eq(HealthRecord::getRecordDate, date)
-                    .eq(HealthRecord::getDeleted, 0);
+                    .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode());
             List<HealthRecord> records = healthRecordService.list(recordWrapper);
             dayData.put("healthRecords", records);
 
             int completedCount = 0;
             for (HealthRecord record : records) {
-                if (record.getStatus() == 1) {
+                if (RecordStatus.COMPLETED.getCode().equals(record.getStatus())) {
                     completedCount++;
                 }
             }
@@ -239,8 +242,8 @@ public class StatisticsServiceImpl implements StatisticsService {
     private Map<String, Object> getTypeStatistics(Long userId, LocalDate firstDay, LocalDate lastDay) {
         Map<String, Object> result = new HashMap<>();
 
-        String[] types = {"wake_up", "sleep", "exercise", "water", "sleep_early"};
-        String[] typeNames = {"起床", "睡觉", "运动", "饮水", "早睡"};
+        String[] types = StatisticsConstants.ALL_TYPES;
+        String[] typeNames = StatisticsConstants.ALL_TYPE_NAMES;
 
         List<Map<String, Object>> typeList = new ArrayList<>();
 
@@ -250,20 +253,20 @@ public class StatisticsServiceImpl implements StatisticsService {
             typeData.put("typeName", typeNames[i]);
 
             int count = 0;
-            if (types[i].equals("wake_up") || types[i].equals("sleep")) {
+            if (isCheckInType(types[i])) {
                 LambdaQueryWrapper<CheckIn> wrapper = new LambdaQueryWrapper<>();
                 wrapper.eq(CheckIn::getUserId, userId)
                         .eq(CheckIn::getCheckInType, types[i])
                         .between(CheckIn::getCheckInDate, firstDay, lastDay)
-                        .eq(CheckIn::getDeleted, 0);
+                        .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode());
                 count = (int) checkInService.count(wrapper);
             } else {
                 LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<>();
                 wrapper.eq(HealthRecord::getUserId, userId)
                         .eq(HealthRecord::getRecordType, types[i])
-                        .eq(HealthRecord::getStatus, 1)
+                        .eq(HealthRecord::getStatus, RecordStatus.COMPLETED.getCode())
                         .between(HealthRecord::getRecordDate, firstDay, lastDay)
-                        .eq(HealthRecord::getDeleted, 0);
+                        .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode());
                 count = (int) healthRecordService.count(wrapper);
             }
 
@@ -273,5 +276,14 @@ public class StatisticsServiceImpl implements StatisticsService {
 
         result.put("types", typeList);
         return result;
+    }
+
+    private boolean isCheckInType(String type) {
+        for (String checkInType : StatisticsConstants.CHECK_IN_TYPES) {
+            if (checkInType.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

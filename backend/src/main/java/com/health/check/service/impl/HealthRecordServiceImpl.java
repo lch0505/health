@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.HealthRecordDTO;
 import com.health.check.entity.HealthRecord;
+import com.health.check.enums.DeletedStatus;
+import com.health.check.enums.ResponseCode;
 import com.health.check.exception.BusinessException;
 import com.health.check.mapper.HealthRecordMapper;
 import com.health.check.service.HealthRecordService;
@@ -22,7 +24,7 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
 
         HealthRecord existRecord = getRecordByDateAndType(userId, today, recordDTO.getRecordType());
         if (existRecord != null) {
-            throw new BusinessException(400, "今天该类型记录已存在，请更新而非新增");
+            throw new BusinessException(ResponseCode.RECORD_EXISTS);
         }
 
         HealthRecord record = new HealthRecord();
@@ -42,11 +44,11 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
     public HealthRecord updateRecord(Long id, Long userId, HealthRecordDTO recordDTO) {
         HealthRecord record = getById(id);
         if (record == null) {
-            throw new BusinessException(404, "记录不存在");
+            throw new BusinessException(ResponseCode.RECORD_NOT_FOUND);
         }
 
         if (!record.getUserId().equals(userId)) {
-            throw new BusinessException(403, "无权修改该记录");
+            throw new BusinessException(ResponseCode.NO_PERMISSION);
         }
 
         record.setQuantity(recordDTO.getQuantity());
@@ -62,11 +64,11 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
     public void deleteRecord(Long id, Long userId) {
         HealthRecord record = getById(id);
         if (record == null) {
-            throw new BusinessException(404, "记录不存在");
+            throw new BusinessException(ResponseCode.RECORD_NOT_FOUND);
         }
 
         if (!record.getUserId().equals(userId)) {
-            throw new BusinessException(403, "无权删除该记录");
+            throw new BusinessException(ResponseCode.NO_PERMISSION);
         }
 
         removeById(id);
@@ -91,7 +93,7 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
             wrapper.le(HealthRecord::getRecordDate, endDate);
         }
 
-        wrapper.eq(HealthRecord::getDeleted, 0)
+        wrapper.eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .orderByDesc(HealthRecord::getRecordDate);
 
         return page(pageParam, wrapper);
@@ -118,7 +120,7 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
             wrapper.le(HealthRecord::getRecordDate, endDate);
         }
 
-        wrapper.eq(HealthRecord::getDeleted, 0)
+        wrapper.eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .orderByDesc(HealthRecord::getRecordDate);
 
         return page(pageParam, wrapper);
@@ -130,7 +132,7 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
         return list(new LambdaQueryWrapper<HealthRecord>()
                 .eq(HealthRecord::getUserId, userId)
                 .eq(HealthRecord::getRecordDate, today)
-                .eq(HealthRecord::getDeleted, 0));
+                .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode()));
     }
 
     @Override
@@ -139,7 +141,7 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
                 .eq(HealthRecord::getUserId, userId)
                 .eq(HealthRecord::getRecordDate, date)
                 .eq(HealthRecord::getRecordType, recordType)
-                .eq(HealthRecord::getDeleted, 0)
+                .eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .last("LIMIT 1"));
     }
 }

@@ -6,6 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.LoginDTO;
 import com.health.check.dto.RegisterDTO;
 import com.health.check.entity.User;
+import com.health.check.enums.DeletedStatus;
+import com.health.check.enums.ResponseCode;
+import com.health.check.enums.UserRole;
+import com.health.check.enums.UserStatus;
 import com.health.check.exception.BusinessException;
 import com.health.check.mapper.UserMapper;
 import com.health.check.service.UserService;
@@ -30,21 +34,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public LoginVO login(LoginDTO loginDTO) {
         User user = getByUsername(loginDTO.getUsername());
         if (user == null) {
-            throw new BusinessException(401, "用户不存在");
+            throw new BusinessException(ResponseCode.USER_NOT_FOUND);
         }
 
-        if (user.getStatus() == 0) {
-            throw new BusinessException(403, "用户已被禁用");
+        if (UserStatus.DISABLED.getCode().equals(user.getStatus())) {
+            throw new BusinessException(ResponseCode.USER_DISABLED);
         }
 
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            throw new BusinessException(401, "密码错误");
+            throw new BusinessException(ResponseCode.PASSWORD_ERROR);
         }
 
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
 
         LoginVO loginVO = new LoginVO();
         BeanUtils.copyProperties(user, loginVO);
+        loginVO.setUserId(user.getId());
         loginVO.setToken(token);
 
         return loginVO;
@@ -54,15 +59,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User register(RegisterDTO registerDTO) {
         User existUser = getByUsername(registerDTO.getUsername());
         if (existUser != null) {
-            throw new BusinessException(400, "用户名已存在");
+            throw new BusinessException(ResponseCode.USERNAME_EXISTS);
         }
 
         User user = new User();
         user.setUsername(registerDTO.getUsername());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         user.setNickname(StringUtils.hasText(registerDTO.getNickname()) ? registerDTO.getNickname() : registerDTO.getUsername());
-        user.setRole("user");
-        user.setStatus(1);
+        user.setRole(UserRole.USER.getCode());
+        user.setStatus(UserStatus.ENABLED.getCode());
 
         save(user);
         return user;
@@ -72,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User getByUsername(String username) {
         return getOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, username)
-                .eq(User::getDeleted, 0));
+                .eq(User::getDeleted, DeletedStatus.NOT_DELETED.getCode()));
     }
 
     @Override
@@ -86,7 +91,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (StringUtils.hasText(role)) {
             wrapper.eq(User::getRole, role);
         }
-        wrapper.eq(User::getDeleted, 0).orderByDesc(User::getCreateTime);
+        wrapper.eq(User::getDeleted, DeletedStatus.NOT_DELETED.getCode()).orderByDesc(User::getCreateTime);
 
         return page(pageParam, wrapper);
     }
@@ -95,15 +100,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User createUser(User user) {
         User existUser = getByUsername(user.getUsername());
         if (existUser != null) {
-            throw new BusinessException(400, "用户名已存在");
+            throw new BusinessException(ResponseCode.USERNAME_EXISTS);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (!StringUtils.hasText(user.getRole())) {
-            user.setRole("user");
+            user.setRole(UserRole.USER.getCode());
         }
         if (user.getStatus() == null) {
-            user.setStatus(1);
+            user.setStatus(UserStatus.ENABLED.getCode());
         }
 
         save(user);
@@ -114,7 +119,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User updateUser(User user) {
         User existUser = getById(user.getId());
         if (existUser == null) {
-            throw new BusinessException(404, "用户不存在");
+            throw new BusinessException(ResponseCode.USER_NOT_FOUND);
         }
 
         if (StringUtils.hasText(user.getPassword())) {
@@ -131,7 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void deleteUser(Long id) {
         User user = getById(id);
         if (user == null) {
-            throw new BusinessException(404, "用户不存在");
+            throw new BusinessException(ResponseCode.USER_NOT_FOUND);
         }
         removeById(id);
     }
@@ -140,7 +145,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void updateStatus(Long id, Integer status) {
         User user = getById(id);
         if (user == null) {
-            throw new BusinessException(404, "用户不存在");
+            throw new BusinessException(ResponseCode.USER_NOT_FOUND);
         }
 
         user.setStatus(status);

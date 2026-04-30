@@ -1,6 +1,7 @@
 package com.health.check.exception;
 
 import com.health.check.common.Result;
+import com.health.check.enums.ResponseCode;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -19,33 +20,33 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public Result<Void> handleAccessDeniedException(AccessDeniedException e) {
-        return Result.error(403, "权限不足");
+        return Result.error(ResponseCode.FORBIDDEN.getCode(), ResponseCode.FORBIDDEN.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldError() != null
                 ? e.getBindingResult().getFieldError().getDefaultMessage()
-                : "参数校验失败";
-        return Result.error(400, message);
+                : ResponseCode.BAD_REQUEST.getMessage();
+        return Result.error(ResponseCode.BAD_REQUEST.getCode(), message);
     }
 
     @ExceptionHandler(BindException.class)
     public Result<Void> handleBindException(BindException e) {
         String message = e.getBindingResult().getFieldError() != null
                 ? e.getBindingResult().getFieldError().getDefaultMessage()
-                : "参数绑定失败";
-        return Result.error(400, message);
+                : ResponseCode.BAD_REQUEST.getMessage();
+        return Result.error(ResponseCode.BAD_REQUEST.getCode(), message);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public Result<Void> handleConstraintViolationException(ConstraintViolationException e) {
-        return Result.error(400, e.getMessage());
+        return Result.error(ResponseCode.BAD_REQUEST.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
         e.printStackTrace();
-        return Result.error(500, "系统内部错误");
+        return Result.error(ResponseCode.INTERNAL_SERVER_ERROR.getCode(), ResponseCode.INTERNAL_SERVER_ERROR.getMessage());
     }
 }
