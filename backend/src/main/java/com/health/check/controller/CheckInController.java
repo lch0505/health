@@ -31,8 +31,6 @@ public class CheckInController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return userService.getByUsername(username).getId();
-
-
     }
 
     @PostMapping

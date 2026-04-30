@@ -23,3 +23,19 @@ export function deleteUser(id) {
 export function updateUserStatus(id, status) {
   return request.put(`/admin/users/${id}/status?status=${status}`)
 }
+
+export function getCheckInList(params) {
+  return request.get('/admin/check-in/list', { params })
+}
+
+export function getCheckInDetail(id) {
+  return request.get(`/admin/check-in/${id}`)
+}
+
+export function getHealthRecordList(params) {
+  return request.get('/admin/health-record/list', { params })
+}
+
+export function getHealthRecordDetail(id) {
+  return request.get(`/admin/health-record/${id}`)
+}

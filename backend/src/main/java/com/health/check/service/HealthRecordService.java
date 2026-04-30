@@ -17,6 +17,8 @@ public interface HealthRecordService extends IService<HealthRecord> {
 
     Page<HealthRecord> getRecordPage(Long userId, Integer page, Integer size, String recordType, LocalDate startDate, LocalDate endDate);
 
+    Page<HealthRecord> getAllRecordPage(Integer page, Integer size, Long userId, String recordType, LocalDate startDate, LocalDate endDate);
+
     List<HealthRecord> getTodayRecords(Long userId);
 
     HealthRecord getRecordByDateAndType(Long userId, LocalDate date, String recordType);
