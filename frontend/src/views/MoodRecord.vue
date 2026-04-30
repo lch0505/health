@@ -135,7 +135,7 @@
 import { ref, reactive, onMounted, markRaw } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
-  Smile,
+  Star,
   ChatLineRound,
   User,
   CircleClose,
@@ -183,7 +183,7 @@ const moodOptions = [
 ]
 
 const moodTypeMap = {
-  very_happy: { name: '非常开心', tag: 'success', icon: markRaw(Smile) },
+  very_happy: { name: '非常开心', tag: 'success', icon: markRaw(Star) },
   happy: { name: '开心', tag: 'primary', icon: markRaw(ChatLineRound) },
   normal: { name: '一般', tag: 'info', icon: markRaw(User) },
   sad: { name: '难过', tag: 'warning', icon: markRaw(CircleClose) },
