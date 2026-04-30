@@ -2,12 +2,14 @@ package com.health.check.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.health.check.common.Result;
+import com.health.check.dto.UpdateStatusDTO;
+import com.health.check.dto.query.UserQueryDTO;
 import com.health.check.entity.User;
 import com.health.check.service.UserService;
+import com.health.check.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,20 +21,13 @@ public class UserController {
 
     @GetMapping("/user/info")
     public Result<User> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userService.getByUsername(username);
-        if (user != null) {
-            user.setPassword(null);
-        }
+        User user = SecurityUtils.getCurrentUser();
         return Result.success(user);
     }
 
     @PutMapping("/user/info")
     public Result<User> updateCurrentUser(@RequestBody User user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User currentUser = userService.getByUsername(username);
+        User currentUser = SecurityUtils.getCurrentUser();
 
         user.setId(currentUser.getId());
         user.setUsername(null);
@@ -47,12 +42,8 @@ public class UserController {
 
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<Page<User>> getUserPage(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String role) {
-        Page<User> userPage = userService.getUserPage(page, size, username, role);
+    public Result<Page<User>> getUserPage(@Validated UserQueryDTO query) {
+        Page<User> userPage = userService.getUserPage(query.getPage(), query.getSize(), query.getUsername(), query.getRole());
         userPage.getRecords().forEach(u -> u.setPassword(null));
         return Result.success(userPage);
     }
@@ -93,8 +84,8 @@ public class UserController {
 
     @PutMapping("/admin/users/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<Void> updateStatus(@PathVariable Long id, @RequestParam Integer status) {
-        userService.updateStatus(id, status);
+    public Result<Void> updateStatus(@PathVariable Long id, @Validated @RequestBody UpdateStatusDTO updateStatusDTO) {
+        userService.updateStatus(id, updateStatusDTO.getStatus());
         return Result.success();
     }
 }
