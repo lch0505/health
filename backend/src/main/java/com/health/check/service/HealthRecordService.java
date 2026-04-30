@@ -3,6 +3,8 @@ package com.health.check.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.health.check.dto.HealthRecordDTO;
+import com.health.check.dto.query.AdminHealthRecordQueryDTO;
+import com.health.check.dto.query.HealthRecordQueryDTO;
 import com.health.check.entity.HealthRecord;
 
 import java.time.LocalDate;
@@ -15,9 +17,9 @@ public interface HealthRecordService extends IService<HealthRecord> {
 
     void deleteRecord(Long id, Long userId);
 
-    Page<HealthRecord> getRecordPage(Long userId, Integer page, Integer size, String recordType, LocalDate startDate, LocalDate endDate);
+    Page<HealthRecord> getRecordPage(HealthRecordQueryDTO query);
 
-    Page<HealthRecord> getAllRecordPage(Integer page, Integer size, Long userId, String recordType, LocalDate startDate, LocalDate endDate);
+    Page<HealthRecord> getAllRecordPage(AdminHealthRecordQueryDTO query);
 
     List<HealthRecord> getTodayRecords(Long userId);
 

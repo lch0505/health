@@ -5,6 +5,7 @@ import com.health.check.common.Result;
 import com.health.check.dto.CheckInDTO;
 import com.health.check.dto.query.CheckInQueryDTO;
 import com.health.check.entity.CheckIn;
+import com.health.check.enums.ResponseCode;
 import com.health.check.service.CheckInService;
 import com.health.check.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +48,8 @@ public class CheckInController {
     @GetMapping("/list")
     public Result<Page<CheckIn>> getCheckInList(@Validated CheckInQueryDTO query) {
         Long userId = SecurityUtils.getCurrentUserId();
-        Page<CheckIn> checkInPage = checkInService.getCheckInPage(
-                userId, query.getPage(), query.getSize(), 
-                query.getCheckInType(), query.getStartDate(), query.getEndDate());
+        query.setUserId(userId);
+        Page<CheckIn> checkInPage = checkInService.getCheckInPage(query);
         return Result.success(checkInPage);
     }
 
@@ -58,7 +58,7 @@ public class CheckInController {
         Long userId = SecurityUtils.getCurrentUserId();
         CheckIn checkIn = checkInService.getById(id);
         if (checkIn == null || !checkIn.getUserId().equals(userId)) {
-            return Result.error(404, "记录不存在");
+            return Result.error(ResponseCode.RECORD_NOT_FOUND.getCode(), ResponseCode.RECORD_NOT_FOUND.getMessage());
         }
         return Result.success(checkIn);
     }

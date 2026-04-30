@@ -7,6 +7,7 @@ import com.health.check.dto.HealthRecordDTO;
 import com.health.check.dto.query.HealthRecordQueryDTO;
 import com.health.check.entity.HealthRecord;
 import com.health.check.enums.RecordStatus;
+import com.health.check.enums.ResponseCode;
 import com.health.check.service.HealthRecordService;
 import com.health.check.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,8 @@ public class HealthRecordController {
     @GetMapping("/list")
     public Result<Page<HealthRecord>> getRecordList(@Validated HealthRecordQueryDTO query) {
         Long userId = SecurityUtils.getCurrentUserId();
-        Page<HealthRecord> recordPage = healthRecordService.getRecordPage(
-                userId, query.getPage(), query.getSize(),
-                query.getRecordType(), query.getStartDate(), query.getEndDate());
+        query.setUserId(userId);
+        Page<HealthRecord> recordPage = healthRecordService.getRecordPage(query);
         return Result.success(recordPage);
     }
 
@@ -79,7 +79,7 @@ public class HealthRecordController {
         Long userId = SecurityUtils.getCurrentUserId();
         HealthRecord record = healthRecordService.getById(id);
         if (record == null || !record.getUserId().equals(userId)) {
-            return Result.error(404, "记录不存在");
+            return Result.error(ResponseCode.RECORD_NOT_FOUND.getCode(), ResponseCode.RECORD_NOT_FOUND.getMessage());
         }
         return Result.success(record);
     }

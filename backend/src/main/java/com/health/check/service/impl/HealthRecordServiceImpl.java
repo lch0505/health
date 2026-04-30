@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.HealthRecordDTO;
+import com.health.check.dto.query.AdminHealthRecordQueryDTO;
+import com.health.check.dto.query.HealthRecordQueryDTO;
 import com.health.check.entity.HealthRecord;
 import com.health.check.enums.DeletedStatus;
 import com.health.check.enums.ResponseCode;
@@ -75,22 +77,22 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
     }
 
     @Override
-    public Page<HealthRecord> getRecordPage(Long userId, Integer page, Integer size, String recordType, LocalDate startDate, LocalDate endDate) {
-        Page<HealthRecord> pageParam = new Page<>(page, size);
+    public Page<HealthRecord> getRecordPage(HealthRecordQueryDTO query) {
+        Page<HealthRecord> pageParam = new Page<>(query.getPage(), query.getSize());
         LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<>();
 
-        wrapper.eq(HealthRecord::getUserId, userId);
+        wrapper.eq(HealthRecord::getUserId, query.getUserId());
 
-        if (recordType != null && !recordType.isEmpty()) {
-            wrapper.eq(HealthRecord::getRecordType, recordType);
+        if (query.getRecordType() != null && !query.getRecordType().isEmpty()) {
+            wrapper.eq(HealthRecord::getRecordType, query.getRecordType());
         }
 
-        if (startDate != null) {
-            wrapper.ge(HealthRecord::getRecordDate, startDate);
+        if (query.getStartDate() != null) {
+            wrapper.ge(HealthRecord::getRecordDate, query.getStartDate());
         }
 
-        if (endDate != null) {
-            wrapper.le(HealthRecord::getRecordDate, endDate);
+        if (query.getEndDate() != null) {
+            wrapper.le(HealthRecord::getRecordDate, query.getEndDate());
         }
 
         wrapper.eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode())
@@ -100,24 +102,24 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
     }
 
     @Override
-    public Page<HealthRecord> getAllRecordPage(Integer page, Integer size, Long userId, String recordType, LocalDate startDate, LocalDate endDate) {
-        Page<HealthRecord> pageParam = new Page<>(page, size);
+    public Page<HealthRecord> getAllRecordPage(AdminHealthRecordQueryDTO query) {
+        Page<HealthRecord> pageParam = new Page<>(query.getPage(), query.getSize());
         LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<>();
 
-        if (userId != null) {
-            wrapper.eq(HealthRecord::getUserId, userId);
+        if (query.getUserId() != null) {
+            wrapper.eq(HealthRecord::getUserId, query.getUserId());
         }
 
-        if (recordType != null && !recordType.isEmpty()) {
-            wrapper.eq(HealthRecord::getRecordType, recordType);
+        if (query.getRecordType() != null && !query.getRecordType().isEmpty()) {
+            wrapper.eq(HealthRecord::getRecordType, query.getRecordType());
         }
 
-        if (startDate != null) {
-            wrapper.ge(HealthRecord::getRecordDate, startDate);
+        if (query.getStartDate() != null) {
+            wrapper.ge(HealthRecord::getRecordDate, query.getStartDate());
         }
 
-        if (endDate != null) {
-            wrapper.le(HealthRecord::getRecordDate, endDate);
+        if (query.getEndDate() != null) {
+            wrapper.le(HealthRecord::getRecordDate, query.getEndDate());
         }
 
         wrapper.eq(HealthRecord::getDeleted, DeletedStatus.NOT_DELETED.getCode())

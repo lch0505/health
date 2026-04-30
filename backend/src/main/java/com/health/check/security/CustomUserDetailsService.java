@@ -1,6 +1,7 @@
 package com.health.check.security;
 
 import com.health.check.entity.User;
+import com.health.check.enums.UserStatus;
 import com.health.check.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getStatus() == 1,
+                UserStatus.ENABLED.getCode().equals(user.getStatus()),
                 true,
                 true,
                 true,
