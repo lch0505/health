@@ -14,5 +14,7 @@ public interface CheckInService extends IService<CheckIn> {
 
     Page<CheckIn> getCheckInPage(Long userId, Integer page, Integer size, String checkInType, LocalDate startDate, LocalDate endDate);
 
+    Page<CheckIn> getAllCheckInPage(Integer page, Integer size, Long userId, String checkInType, LocalDate startDate, LocalDate endDate);
+
     boolean hasCheckedInToday(Long userId, String checkInType);
 }

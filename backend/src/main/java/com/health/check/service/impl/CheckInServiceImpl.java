@@ -117,6 +117,34 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
     }
 
     @Override
+    public Page<CheckIn> getAllCheckInPage(Integer page, Integer size, Long userId, String checkInType, LocalDate startDate, LocalDate endDate) {
+        Page<CheckIn> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<CheckIn> wrapper = new LambdaQueryWrapper<>();
+
+        if (userId != null) {
+            wrapper.eq(CheckIn::getUserId, userId);
+        }
+
+        if (checkInType != null && !checkInType.isEmpty()) {
+            wrapper.eq(CheckIn::getCheckInType, checkInType);
+        }
+
+        if (startDate != null) {
+            wrapper.ge(CheckIn::getCheckInDate, startDate);
+        }
+
+        if (endDate != null) {
+            wrapper.le(CheckIn::getCheckInDate, endDate);
+        }
+
+        wrapper.eq(CheckIn::getDeleted, 0)
+                .orderByDesc(CheckIn::getCheckInDate)
+                .orderByDesc(CheckIn::getCheckInTime);
+
+        return page(pageParam, wrapper);
+    }
+
+    @Override
     public boolean hasCheckedInToday(Long userId, String checkInType) {
         CheckIn todayCheckIn = getTodayCheckIn(userId, checkInType);
         return todayCheckIn != null;

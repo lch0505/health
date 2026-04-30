@@ -81,7 +81,11 @@ const handleLogin = async () => {
   loading.value = false
 
   if (success) {
-    router.push('/dashboard')
+    if (userStore.isAdmin) {
+      router.push('/admin/users')
+    } else {
+      router.push('/dashboard')
+    }
   }
 }
 </script>

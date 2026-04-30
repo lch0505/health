@@ -98,6 +98,33 @@ public class HealthRecordServiceImpl extends ServiceImpl<HealthRecordMapper, Hea
     }
 
     @Override
+    public Page<HealthRecord> getAllRecordPage(Integer page, Integer size, Long userId, String recordType, LocalDate startDate, LocalDate endDate) {
+        Page<HealthRecord> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<HealthRecord> wrapper = new LambdaQueryWrapper<>();
+
+        if (userId != null) {
+            wrapper.eq(HealthRecord::getUserId, userId);
+        }
+
+        if (recordType != null && !recordType.isEmpty()) {
+            wrapper.eq(HealthRecord::getRecordType, recordType);
+        }
+
+        if (startDate != null) {
+            wrapper.ge(HealthRecord::getRecordDate, startDate);
+        }
+
+        if (endDate != null) {
+            wrapper.le(HealthRecord::getRecordDate, endDate);
+        }
+
+        wrapper.eq(HealthRecord::getDeleted, 0)
+                .orderByDesc(HealthRecord::getRecordDate);
+
+        return page(pageParam, wrapper);
+    }
+
+    @Override
     public List<HealthRecord> getTodayRecords(Long userId) {
         LocalDate today = LocalDate.now();
         return list(new LambdaQueryWrapper<HealthRecord>()
