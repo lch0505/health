@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.CheckInDTO;
+import com.health.check.dto.query.AdminCheckInQueryDTO;
+import com.health.check.dto.query.CheckInQueryDTO;
 import com.health.check.entity.CheckIn;
 import com.health.check.entity.StreakStat;
 import com.health.check.enums.DeletedStatus;
@@ -94,22 +96,22 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
     }
 
     @Override
-    public Page<CheckIn> getCheckInPage(Long userId, Integer page, Integer size, String checkInType, LocalDate startDate, LocalDate endDate) {
-        Page<CheckIn> pageParam = new Page<>(page, size);
+    public Page<CheckIn> getCheckInPage(CheckInQueryDTO query) {
+        Page<CheckIn> pageParam = new Page<>(query.getPage(), query.getSize());
         LambdaQueryWrapper<CheckIn> wrapper = new LambdaQueryWrapper<>();
 
-        wrapper.eq(CheckIn::getUserId, userId);
+        wrapper.eq(CheckIn::getUserId, query.getUserId());
 
-        if (checkInType != null && !checkInType.isEmpty()) {
-            wrapper.eq(CheckIn::getCheckInType, checkInType);
+        if (query.getCheckInType() != null && !query.getCheckInType().isEmpty()) {
+            wrapper.eq(CheckIn::getCheckInType, query.getCheckInType());
         }
 
-        if (startDate != null) {
-            wrapper.ge(CheckIn::getCheckInDate, startDate);
+        if (query.getStartDate() != null) {
+            wrapper.ge(CheckIn::getCheckInDate, query.getStartDate());
         }
 
-        if (endDate != null) {
-            wrapper.le(CheckIn::getCheckInDate, endDate);
+        if (query.getEndDate() != null) {
+            wrapper.le(CheckIn::getCheckInDate, query.getEndDate());
         }
 
         wrapper.eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
@@ -120,24 +122,24 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
     }
 
     @Override
-    public Page<CheckIn> getAllCheckInPage(Integer page, Integer size, Long userId, String checkInType, LocalDate startDate, LocalDate endDate) {
-        Page<CheckIn> pageParam = new Page<>(page, size);
+    public Page<CheckIn> getAllCheckInPage(AdminCheckInQueryDTO query) {
+        Page<CheckIn> pageParam = new Page<>(query.getPage(), query.getSize());
         LambdaQueryWrapper<CheckIn> wrapper = new LambdaQueryWrapper<>();
 
-        if (userId != null) {
-            wrapper.eq(CheckIn::getUserId, userId);
+        if (query.getUserId() != null) {
+            wrapper.eq(CheckIn::getUserId, query.getUserId());
         }
 
-        if (checkInType != null && !checkInType.isEmpty()) {
-            wrapper.eq(CheckIn::getCheckInType, checkInType);
+        if (query.getCheckInType() != null && !query.getCheckInType().isEmpty()) {
+            wrapper.eq(CheckIn::getCheckInType, query.getCheckInType());
         }
 
-        if (startDate != null) {
-            wrapper.ge(CheckIn::getCheckInDate, startDate);
+        if (query.getStartDate() != null) {
+            wrapper.ge(CheckIn::getCheckInDate, query.getStartDate());
         }
 
-        if (endDate != null) {
-            wrapper.le(CheckIn::getCheckInDate, endDate);
+        if (query.getEndDate() != null) {
+            wrapper.le(CheckIn::getCheckInDate, query.getEndDate());
         }
 
         wrapper.eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())

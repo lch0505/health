@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.health.check.common.Result;
 import com.health.check.dto.query.AdminHealthRecordQueryDTO;
 import com.health.check.entity.HealthRecord;
+import com.health.check.enums.ResponseCode;
 import com.health.check.service.HealthRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,7 @@ public class AdminHealthRecordController {
 
     @GetMapping("/list")
     public Result<Page<HealthRecord>> getRecordList(@Validated AdminHealthRecordQueryDTO query) {
-        Page<HealthRecord> recordPage = healthRecordService.getAllRecordPage(
-                query.getPage(), query.getSize(), query.getUserId(),
-                query.getRecordType(), query.getStartDate(), query.getEndDate());
+        Page<HealthRecord> recordPage = healthRecordService.getAllRecordPage(query);
         return Result.success(recordPage);
     }
 
@@ -30,7 +29,7 @@ public class AdminHealthRecordController {
     public Result<HealthRecord> getRecordDetail(@PathVariable Long id) {
         HealthRecord record = healthRecordService.getById(id);
         if (record == null) {
-            return Result.error(404, "记录不存在");
+            return Result.error(ResponseCode.RECORD_NOT_FOUND.getCode(), ResponseCode.RECORD_NOT_FOUND.getMessage());
         }
         return Result.success(record);
     }

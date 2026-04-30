@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.health.check.dto.LoginDTO;
 import com.health.check.dto.RegisterDTO;
+import com.health.check.dto.query.UserQueryDTO;
 import com.health.check.entity.User;
 import com.health.check.enums.DeletedStatus;
 import com.health.check.enums.ResponseCode;
@@ -81,15 +82,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Page<User> getUserPage(Integer page, Integer size, String username, String role) {
-        Page<User> pageParam = new Page<>(page, size);
+    public Page<User> getUserPage(UserQueryDTO query) {
+        Page<User> pageParam = new Page<>(query.getPage(), query.getSize());
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
 
-        if (StringUtils.hasText(username)) {
-            wrapper.like(User::getUsername, username).or().like(User::getNickname, username);
+        if (StringUtils.hasText(query.getUsername())) {
+            wrapper.like(User::getUsername, query.getUsername()).or().like(User::getNickname, query.getUsername());
         }
-        if (StringUtils.hasText(role)) {
-            wrapper.eq(User::getRole, role);
+        if (StringUtils.hasText(query.getRole())) {
+            wrapper.eq(User::getRole, query.getRole());
         }
         wrapper.eq(User::getDeleted, DeletedStatus.NOT_DELETED.getCode()).orderByDesc(User::getCreateTime);
 

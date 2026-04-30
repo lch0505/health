@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/admin/users")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<Page<User>> getUserPage(@Validated UserQueryDTO query) {
-        Page<User> userPage = userService.getUserPage(query.getPage(), query.getSize(), query.getUsername(), query.getRole());
+        Page<User> userPage = userService.getUserPage(query);
         userPage.getRecords().forEach(u -> u.setPassword(null));
         return Result.success(userPage);
     }

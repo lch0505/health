@@ -14,6 +14,11 @@ import java.time.LocalDate;
 public class CheckInQueryDTO extends PageQueryDTO {
 
     /**
+     * 用户ID（内部传递用，前端不需要传递）
+     */
+    private Long userId;
+
+    /**
      * 打卡类型
      */
     private String checkInType;
