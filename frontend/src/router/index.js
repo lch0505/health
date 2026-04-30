@@ -39,6 +39,24 @@ const routes = [
         meta: { title: '健康记录' }
       },
       {
+        path: 'vital-sign',
+        name: 'VitalSign',
+        component: () => import('@/views/VitalSign.vue'),
+        meta: { title: '体征数据' }
+      },
+      {
+        path: 'diet-record',
+        name: 'DietRecord',
+        component: () => import('@/views/DietRecord.vue'),
+        meta: { title: '饮食记录' }
+      },
+      {
+        path: 'mood-record',
+        name: 'MoodRecord',
+        component: () => import('@/views/MoodRecord.vue'),
+        meta: { title: '情绪管理' }
+      },
+      {
         path: 'monthly-summary',
         name: 'MonthlySummary',
         component: () => import('@/views/MonthlySummary.vue'),
@@ -75,6 +93,24 @@ const routes = [
         name: 'HealthRecordManagement',
         component: () => import('@/views/admin/HealthRecordManagement.vue'),
         meta: { title: '健康记录管理' }
+      },
+      {
+        path: 'vital-sign',
+        name: 'VitalSignManagement',
+        component: () => import('@/views/admin/VitalSignManagement.vue'),
+        meta: { title: '体征数据管理' }
+      },
+      {
+        path: 'diet-record',
+        name: 'DietRecordManagement',
+        component: () => import('@/views/admin/DietRecordManagement.vue'),
+        meta: { title: '饮食记录管理' }
+      },
+      {
+        path: 'mood-record',
+        name: 'MoodRecordManagement',
+        component: () => import('@/views/admin/MoodRecordManagement.vue'),
+        meta: { title: '情绪记录管理' }
       }
     ]
   }
