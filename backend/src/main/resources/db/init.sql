@@ -193,6 +193,42 @@ INSERT INTO achievement (achievement_code, name, description, requirement_type, 
 ('water_master', '饮水自律', '坚持每日饮水，保持充足水分', 'streak', 30, '连续30天饮水记录', 500, 3, 1),
 ('full_month', '全月满卡', '整个月坚持打卡，成就满满', 'monthly', 1, '自然月内每天都有打卡记录', 1000, 4, 1);
 
+-- 积分配置表
+CREATE TABLE IF NOT EXISTS points_config (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '配置ID',
+    points_type VARCHAR(50) NOT NULL UNIQUE COMMENT '积分类型：daily_check_in-每日打卡, continuous_streak_7-连续7天打卡, continuous_streak_15-连续15天打卡, continuous_streak_30-连续30天打卡, goal_complete-完成目标',
+    points_type_name VARCHAR(50) NOT NULL COMMENT '积分类型名称',
+    points INT NOT NULL DEFAULT 0 COMMENT '积分数量',
+    description VARCHAR(255) COMMENT '描述',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_points_type (points_type),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='积分配置表';
+
+-- 公告表
+CREATE TABLE IF NOT EXISTS announcement (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '公告ID',
+    title VARCHAR(100) NOT NULL COMMENT '公告标题',
+    content TEXT COMMENT '公告内容',
+    publisher_id BIGINT NOT NULL COMMENT '发布者ID',
+    publisher_name VARCHAR(50) COMMENT '发布者名称',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-下架，1-上架',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_status (status),
+    INDEX idx_create_time (create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='公告表';
+
+-- 初始化积分配置数据
+INSERT INTO points_config (points_type, points_type_name, points, description, status) VALUES
+('daily_check_in', '每日打卡', 10, '每日完成打卡获得的积分', 1),
+('continuous_streak_7', '连续7天打卡', 50, '连续打卡7天获得的奖励积分', 1),
+('continuous_streak_15', '连续15天打卡', 100, '连续打卡15天获得的奖励积分', 1),
+('continuous_streak_30', '连续30天打卡', 200, '连续打卡30天获得的奖励积分', 1),
+('goal_complete', '完成目标', 20, '完成健康目标获得的积分', 1);
+
 -- 注意：用户账号会在应用启动时由 DataInitializer 自动创建
 -- 默认账号：
 -- 管理员：admin / admin123

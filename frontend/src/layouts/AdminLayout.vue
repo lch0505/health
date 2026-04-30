@@ -40,9 +40,17 @@
           <el-icon><Coin /></el-icon>
           <span>积分管理</span>
         </el-menu-item>
+        <el-menu-item index="/admin/points-config">
+          <el-icon><Setting /></el-icon>
+          <span>积分规则配置</span>
+        </el-menu-item>
         <el-menu-item index="/admin/achievement">
           <el-icon><Trophy /></el-icon>
           <span>勋章管理</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/announcement">
+          <el-icon><Bell /></el-icon>
+          <span>公告管理</span>
         </el-menu-item>
       </el-menu>
     </el-aside>

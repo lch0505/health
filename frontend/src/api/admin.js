@@ -151,3 +151,51 @@ export function grantAchievement(userId, achievementId) {
 export function revokeUserAchievement(id) {
   return request.delete(`/admin/achievement/user-record/${id}`)
 }
+
+export function getPointsConfigList(params) {
+  return request.get('/admin/points-config/list', { params })
+}
+
+export function getPointsConfigDetail(id) {
+  return request.get(`/admin/points-config/${id}`)
+}
+
+export function createPointsConfig(data) {
+  return request.post('/admin/points-config/add', data)
+}
+
+export function updatePointsConfig(data) {
+  return request.put('/admin/points-config/update', data)
+}
+
+export function deletePointsConfig(id) {
+  return request.delete(`/admin/points-config/${id}`)
+}
+
+export function updatePointsConfigStatus(id, status) {
+  return request.put(`/admin/points-config/status/${id}?status=${status}`)
+}
+
+export function getAnnouncementList(params) {
+  return request.get('/admin/announcement/list', { params })
+}
+
+export function getAnnouncementDetail(id) {
+  return request.get(`/admin/announcement/${id}`)
+}
+
+export function createAnnouncement(data) {
+  return request.post('/admin/announcement/add', data)
+}
+
+export function updateAnnouncement(data) {
+  return request.put('/admin/announcement/update', data)
+}
+
+export function deleteAnnouncement(id) {
+  return request.delete(`/admin/announcement/${id}`)
+}
+
+export function updateAnnouncementStatus(id, status) {
+  return request.put(`/admin/announcement/status/${id}?status=${status}`)
+}

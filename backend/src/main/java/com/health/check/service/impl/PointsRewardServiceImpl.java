@@ -30,6 +30,9 @@ public class PointsRewardServiceImpl implements PointsRewardService {
     @Autowired
     private HealthRecordService healthRecordService;
 
+    @Autowired
+    private PointsConfigService pointsConfigService;
+
     @Lazy
     @Autowired
     private CheckInService checkInService;
@@ -38,13 +41,16 @@ public class PointsRewardServiceImpl implements PointsRewardService {
     @Transactional
     public void rewardDailyCheckIn(Long userId, String checkInType) {
         String typeName = CheckInType.WAKE_UP.getCode().equals(checkInType) ? "起床" : "睡觉";
-        userPointsService.addPoints(
-                userId,
-                PointsType.DAILY_CHECK_IN.getDefaultPoints(),
-                PointsType.DAILY_CHECK_IN.getCode(),
-                "每日" + typeName + "打卡奖励",
-                null
-        );
+        Integer points = pointsConfigService.getPointsByType(PointsType.DAILY_CHECK_IN.getCode());
+        if (points > 0) {
+            userPointsService.addPoints(
+                    userId,
+                    points,
+                    PointsType.DAILY_CHECK_IN.getCode(),
+                    "每日" + typeName + "打卡奖励",
+                    null
+            );
+        }
     }
 
     @Override
@@ -65,13 +71,16 @@ public class PointsRewardServiceImpl implements PointsRewardService {
         }
 
         if (rewardType != null) {
-            userPointsService.addPoints(
-                    userId,
-                    rewardType.getDefaultPoints(),
-                    rewardType.getCode(),
-                    description,
-                    null
-            );
+            Integer points = pointsConfigService.getPointsByType(rewardType.getCode());
+            if (points > 0) {
+                userPointsService.addPoints(
+                        userId,
+                        points,
+                        rewardType.getCode(),
+                        description,
+                        null
+                );
+            }
         }
     }
 
