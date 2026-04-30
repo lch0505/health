@@ -69,6 +69,61 @@ CREATE TABLE IF NOT EXISTS streak_stat (
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='连续打卡统计表';
 
+-- 体征数据表
+CREATE TABLE IF NOT EXISTS vital_sign (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '体征数据ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    record_date DATE NOT NULL COMMENT '记录日期',
+    weight DECIMAL(5,2) COMMENT '体重（kg）',
+    body_fat DECIMAL(5,2) COMMENT '体脂率（%）',
+    systolic_pressure INT COMMENT '收缩压（mmHg）',
+    diastolic_pressure INT COMMENT '舒张压（mmHg）',
+    vision_status VARCHAR(20) COMMENT '视力状态：excellent-优秀，good-良好，normal-一般，poor-较差',
+    sleep_quality INT COMMENT '睡眠质量评分：1-非常差，2-较差，3-一般，4-良好，5-非常好',
+    remark VARCHAR(255) COMMENT '备注',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删除，1-已删除',
+    INDEX idx_user_id (user_id),
+    INDEX idx_record_date (record_date),
+    UNIQUE KEY uk_user_date (user_id, record_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='体征数据表';
+
+-- 饮食记录表
+CREATE TABLE IF NOT EXISTS diet_record (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '饮食记录ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    record_date DATE NOT NULL COMMENT '记录日期',
+    meal_type VARCHAR(20) NOT NULL COMMENT '餐次类型：breakfast-早餐，lunch-午餐，dinner-晚餐',
+    diet_taste VARCHAR(20) COMMENT '饮食口味：light-清淡，moderate-适中，oily-油腻',
+    avoid_food_compliance TINYINT COMMENT '忌口执行：0-未执行，1-已执行',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-未完成，1-已完成',
+    remark VARCHAR(255) COMMENT '备注',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删除，1-已删除',
+    INDEX idx_user_id (user_id),
+    INDEX idx_record_date (record_date),
+    INDEX idx_meal_type (meal_type),
+    UNIQUE KEY uk_user_date_meal (user_id, record_date, meal_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='饮食记录表';
+
+-- 情绪记录表
+CREATE TABLE IF NOT EXISTS mood_record (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '情绪记录ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    record_date DATE NOT NULL COMMENT '记录日期',
+    mood_type VARCHAR(20) NOT NULL COMMENT '心情类型：very_happy-非常开心，happy-开心，normal-一般，sad-难过，angry-生气',
+    remark VARCHAR(255) COMMENT '备注',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删除，1-已删除',
+    INDEX idx_user_id (user_id),
+    INDEX idx_record_date (record_date),
+    INDEX idx_mood_type (mood_type),
+    UNIQUE KEY uk_user_date (user_id, record_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='情绪记录表';
+
 -- 注意：用户账号会在应用启动时由 DataInitializer 自动创建
 -- 默认账号：
 -- 管理员：admin / admin123
