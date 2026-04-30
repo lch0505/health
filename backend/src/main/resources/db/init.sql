@@ -124,6 +124,75 @@ CREATE TABLE IF NOT EXISTS mood_record (
     UNIQUE KEY uk_user_date (user_id, record_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='情绪记录表';
 
+-- 用户积分表
+CREATE TABLE IF NOT EXISTS user_points (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '积分ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    total_points INT NOT NULL DEFAULT 0 COMMENT '总积分',
+    current_points INT NOT NULL DEFAULT 0 COMMENT '当前可用积分',
+    used_points INT NOT NULL DEFAULT 0 COMMENT '已使用积分',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    UNIQUE KEY uk_user_id (user_id),
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户积分表';
+
+-- 积分记录表
+CREATE TABLE IF NOT EXISTS points_record (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '记录ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    points INT NOT NULL COMMENT '积分数量（正数为获得，负数为消耗）',
+    points_type VARCHAR(50) NOT NULL COMMENT '积分类型：daily_check_in-每日打卡, continuous_streak-连续打卡, goal_complete-完成目标, exchange-兑换',
+    description VARCHAR(255) COMMENT '描述',
+    reference_id BIGINT COMMENT '关联记录ID',
+    record_date DATE NOT NULL COMMENT '记录日期',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_user_id (user_id),
+    INDEX idx_record_date (record_date),
+    INDEX idx_user_date (user_id, record_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='积分记录表';
+
+-- 勋章定义表
+CREATE TABLE IF NOT EXISTS achievement (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '勋章ID',
+    achievement_code VARCHAR(50) NOT NULL UNIQUE COMMENT '勋章代码：sleep_early_master-早睡达人, exercise_master-运动坚持, water_master-饮水自律, full_month-全月满卡',
+    name VARCHAR(50) NOT NULL COMMENT '勋章名称',
+    description VARCHAR(255) COMMENT '勋章描述',
+    icon VARCHAR(255) COMMENT '勋章图标URL',
+    requirement_type VARCHAR(50) NOT NULL COMMENT '条件类型：streak-连续天数, total-总次数, monthly-月度统计',
+    requirement_value INT NOT NULL COMMENT '条件值（如连续30天）',
+    requirement_description VARCHAR(255) COMMENT '条件描述',
+    points_reward INT NOT NULL DEFAULT 0 COMMENT '获得勋章奖励积分',
+    sort_order INT NOT NULL DEFAULT 0 COMMENT '排序',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    INDEX idx_achievement_code (achievement_code),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='勋章定义表';
+
+-- 用户获得的勋章表
+CREATE TABLE IF NOT EXISTS user_achievement (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    achievement_id BIGINT NOT NULL COMMENT '勋章ID',
+    achievement_code VARCHAR(50) NOT NULL COMMENT '勋章代码',
+    obtain_date DATE NOT NULL COMMENT '获得日期',
+    is_new TINYINT NOT NULL DEFAULT 1 COMMENT '是否新获得：0-已读，1-新获得',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    UNIQUE KEY uk_user_achievement (user_id, achievement_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_achievement_id (achievement_id),
+    INDEX idx_obtain_date (obtain_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户获得的勋章表';
+
+-- 初始化勋章数据
+INSERT INTO achievement (achievement_code, name, description, requirement_type, requirement_value, requirement_description, points_reward, sort_order, status) VALUES
+('sleep_early_master', '早睡达人', '坚持早睡打卡，养成良好作息习惯', 'streak', 30, '连续30天早睡打卡', 500, 1, 1),
+('exercise_master', '运动坚持', '坚持运动，保持健康体魄', 'streak', 30, '连续30天运动记录', 500, 2, 1),
+('water_master', '饮水自律', '坚持每日饮水，保持充足水分', 'streak', 30, '连续30天饮水记录', 500, 3, 1),
+('full_month', '全月满卡', '整个月坚持打卡，成就满满', 'monthly', 1, '自然月内每天都有打卡记录', 1000, 4, 1);
+
 -- 注意：用户账号会在应用启动时由 DataInitializer 自动创建
 -- 默认账号：
 -- 管理员：admin / admin123

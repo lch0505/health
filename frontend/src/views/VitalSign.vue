@@ -23,7 +23,7 @@
             <div class="stat-item">
               <div class="stat-label">{{ item.label }}</div>
               <div class="stat-value" :class="item.valueClass">
-                {{ todayRecord[item.key] !== null ? todayRecord[item.key] : '-' }}
+                {{ getDisplayValue(item.key, todayRecord[item.key]) }}
                 <span class="stat-unit">{{ item.unit }}</span>
               </div>
             </div>
@@ -275,6 +275,19 @@ const getVisionStatusName = (status) => visionStatusMap[status]?.name || status
 const getVisionStatusTag = (status) => visionStatusMap[status]?.tag || 'info'
 const getSleepQualityName = (quality) => sleepQualityMap[quality]?.name || '-'
 const getSleepQualityTag = (quality) => sleepQualityMap[quality]?.tag || 'info'
+
+const getDisplayValue = (key, value) => {
+  if (value === null || value === undefined || value === '') {
+    return '-'
+  }
+  if (key === 'visionStatus') {
+    return getVisionStatusName(value)
+  }
+  if (key === 'sleepQuality') {
+    return getSleepQualityName(value)
+  }
+  return value
+}
 
 const fetchTodayRecord = async () => {
   try {

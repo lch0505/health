@@ -14,6 +14,7 @@ import com.health.check.enums.ResponseCode;
 import com.health.check.exception.BusinessException;
 import com.health.check.mapper.CheckInMapper;
 import com.health.check.service.CheckInService;
+import com.health.check.service.PointsRewardService;
 import com.health.check.service.StreakStatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
 
     @Autowired
     private StreakStatService streakStatService;
+
+    @Autowired
+    private PointsRewardService pointsRewardService;
 
     @Override
     @Transactional
@@ -47,13 +51,18 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
 
         save(checkIn);
 
-        updateStreak(userId, checkInDTO.getCheckInType(), today);
+        int newStreak = updateStreak(userId, checkInDTO.getCheckInType(), today);
+
+        pointsRewardService.rewardDailyCheckIn(userId, checkInDTO.getCheckInType());
+
+        pointsRewardService.rewardContinuousStreak(userId, checkInDTO.getCheckInType(), newStreak);
 
         return checkIn;
     }
 
-    private void updateStreak(Long userId, String checkInType, LocalDate today) {
+    private int updateStreak(Long userId, String checkInType, LocalDate today) {
         StreakStat streakStat = streakStatService.getByUserIdAndType(userId, checkInType);
+        int newStreak = 1;
 
         if (streakStat == null) {
             streakStat = new StreakStat();
@@ -74,6 +83,7 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
                 streakStat.setCurrentStreak(1);
             }
 
+            newStreak = streakStat.getCurrentStreak();
             streakStat.setLastCheckInDate(today);
 
             if (streakStat.getCurrentStreak() > streakStat.getMaxStreak()) {
@@ -82,14 +92,20 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
 
             streakStatService.updateById(streakStat);
         }
+        return newStreak;
     }
 
     @Override
     public CheckIn getTodayCheckIn(Long userId, String checkInType) {
         LocalDate today = LocalDate.now();
+        return getCheckInByDate(userId, checkInType, today);
+    }
+
+    @Override
+    public CheckIn getCheckInByDate(Long userId, String checkInType, LocalDate date) {
         return getOne(new LambdaQueryWrapper<CheckIn>()
                 .eq(CheckIn::getUserId, userId)
-                .eq(CheckIn::getCheckInDate, today)
+                .eq(CheckIn::getCheckInDate, date)
                 .eq(CheckIn::getCheckInType, checkInType)
                 .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())
                 .last("LIMIT 1"));
@@ -153,5 +169,19 @@ public class CheckInServiceImpl extends ServiceImpl<CheckInMapper, CheckIn> impl
     public boolean hasCheckedInToday(Long userId, String checkInType) {
         CheckIn todayCheckIn = getTodayCheckIn(userId, checkInType);
         return todayCheckIn != null;
+    }
+
+    @Override
+    public boolean hasCheckedInOnDate(Long userId, String checkInType, LocalDate date) {
+        CheckIn checkIn = getCheckInByDate(userId, checkInType, date);
+        return checkIn != null;
+    }
+
+    @Override
+    public boolean hasAnyCheckInOnDate(Long userId, LocalDate date) {
+        return count(new LambdaQueryWrapper<CheckIn>()
+                .eq(CheckIn::getUserId, userId)
+                .eq(CheckIn::getCheckInDate, date)
+                .eq(CheckIn::getDeleted, DeletedStatus.NOT_DELETED.getCode())) > 0;
     }
 }
