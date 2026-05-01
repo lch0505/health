@@ -199,3 +199,23 @@ export function deleteAnnouncement(id) {
 export function updateAnnouncementStatus(id, status) {
   return request.put(`/admin/announcement/status/${id}?status=${status}`)
 }
+
+export function getMessageBoardList(params) {
+  return request.get('/admin/message-board/list', { params })
+}
+
+export function getMessageBoardDetail(id) {
+  return request.get(`/admin/message-board/${id}`)
+}
+
+export function updateMessageBoard(data) {
+  return request.put('/admin/message-board/update', data)
+}
+
+export function deleteMessageBoard(id) {
+  return request.delete(`/admin/message-board/${id}`)
+}
+
+export function updateMessageBoardStatus(id, status) {
+  return request.put(`/admin/message-board/status/${id}?status=${status}`)
+}

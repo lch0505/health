@@ -221,6 +221,22 @@ CREATE TABLE IF NOT EXISTS announcement (
     INDEX idx_create_time (create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='公告表';
 
+-- 留言板表
+CREATE TABLE IF NOT EXISTS message_board (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '留言ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    username VARCHAR(50) NOT NULL COMMENT '用户名',
+    nickname VARCHAR(50) COMMENT '昵称',
+    content TEXT NOT NULL COMMENT '留言内容',
+    status TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-隐藏，1-显示',
+    create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    deleted TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除：0-未删除，1-已删除',
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status),
+    INDEX idx_create_time (create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='留言板表';
+
 -- 初始化积分配置数据
 INSERT INTO points_config (points_type, points_type_name, points, description, status) VALUES
 ('daily_check_in', '每日打卡', 10, '每日完成打卡获得的积分', 1),
