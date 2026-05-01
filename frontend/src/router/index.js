@@ -85,6 +85,12 @@ const routes = [
         name: 'Announcement',
         component: () => import('@/views/Announcement.vue'),
         meta: { title: '公告通知' }
+      },
+      {
+        path: 'message-board',
+        name: 'MessageBoard',
+        component: () => import('@/views/MessageBoard.vue'),
+        meta: { title: '留言板' }
       }
     ]
   },
@@ -153,6 +159,12 @@ const routes = [
         name: 'AnnouncementManagement',
         component: () => import('@/views/admin/AnnouncementManagement.vue'),
         meta: { title: '公告管理' }
+      },
+      {
+        path: 'message-board',
+        name: 'MessageBoardManagement',
+        component: () => import('@/views/admin/MessageBoardManagement.vue'),
+        meta: { title: '留言板管理' }
       }
     ]
   }

@@ -52,6 +52,10 @@
           <el-icon><Bell /></el-icon>
           <span>公告管理</span>
         </el-menu-item>
+        <el-menu-item index="/admin/message-board">
+          <el-icon><ChatDotRound /></el-icon>
+          <span>留言板管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
