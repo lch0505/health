@@ -118,7 +118,7 @@ const formatTime = (time) => {
 }
 
 const canEdit = (item) => {
-  return item.userId === currentUserId.value || isAdmin.value
+  return Number(item.userId) === Number(currentUserId.value) || isAdmin.value
 }
 
 const fetchList = async () => {

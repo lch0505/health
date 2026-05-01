@@ -42,8 +42,8 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">
-              {{ row.status === 1 ? '显示' : '隐藏' }}
+            <el-tag :type="Number(row.status) === 1 ? 'success' : 'danger'" size="small">
+              {{ Number(row.status) === 1 ? '显示' : '隐藏' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -62,11 +62,11 @@
             <el-button type="primary" link @click="handleView(row)">查看</el-button>
             <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
             <el-button
-              :type="row.status === 1 ? 'warning' : 'success'"
+              :type="Number(row.status) === 1 ? 'warning' : 'success'"
               link
               @click="handleToggleStatus(row)"
             >
-              {{ row.status === 1 ? '隐藏' : '显示' }}
+              {{ Number(row.status) === 1 ? '隐藏' : '显示' }}
             </el-button>
             <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
           </template>
@@ -128,8 +128,8 @@
           <pre>{{ form.content }}</pre>
         </div>
         <div class="detail-status">
-          <el-tag :type="form.status === 1 ? 'success' : 'danger'" size="small">
-            {{ form.status === 1 ? '显示' : '隐藏' }}
+          <el-tag :type="Number(form.status) === 1 ? 'success' : 'danger'" size="small">
+            {{ Number(form.status) === 1 ? '显示' : '隐藏' }}
           </el-tag>
         </div>
       </div>
@@ -236,7 +236,7 @@ const handleView = (row) => {
   form.id = row.id
   form.nickname = row.nickname
   form.content = row.content
-  form.status = row.status
+  form.status = Number(row.status)
   form.createTime = row.createTime
   form.updateTime = row.updateTime
   dialogVisible.value = true
@@ -247,7 +247,7 @@ const handleEdit = (row) => {
   form.id = row.id
   form.nickname = row.nickname
   form.content = row.content
-  form.status = row.status
+  form.status = Number(row.status)
   dialogVisible.value = true
 }
 
@@ -278,7 +278,7 @@ const handleSubmit = async () => {
 }
 
 const handleToggleStatus = (row) => {
-  const newStatus = row.status === 1 ? 0 : 1
+  const newStatus = Number(row.status) === 1 ? 0 : 1
   const action = newStatus === 1 ? '显示' : '隐藏'
 
   ElMessageBox.confirm(`确定要${action}该留言吗？`, '提示', {
