@@ -106,7 +106,7 @@
             <el-table-column prop="pointsTypeName" label="类型" width="150">
               <template #default="{ row }">
                 <el-tag :type="row.points > 0 ? 'success' : 'danger'" size="small">
-                  {{ row.pointsTypeName || row.pointsType }}
+                  {{ row.pointsTypeName || getPointsTypeText(row.pointsType) }}
                 </el-tag>
               </template>
             </el-table-column>
@@ -235,6 +235,19 @@ const adjustRules = {
 const formatTime = (time) => {
   if (!time) return ''
   return time.replace('T', ' ').substring(0, 19)
+}
+
+const getPointsTypeText = (code) => {
+  const map = {
+    'daily_check_in': '每日打卡',
+    'continuous_streak_7': '连续7天打卡',
+    'continuous_streak_15': '连续15天打卡',
+    'continuous_streak_30': '连续30天打卡',
+    'goal_complete': '完成目标',
+    'achievement_reward': '勋章奖励',
+    'exchange': '积分兑换'
+  }
+  return map[code] || code
 }
 
 const fetchUserPoints = async () => {

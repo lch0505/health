@@ -39,7 +39,7 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="pointsType" label="积分类型" width="180">
           <template #default="{ row }">
-            <el-tag size="small">{{ row.pointsType }}</el-tag>
+            <el-tag size="small">{{ getPointsTypeText(row.pointsType) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="pointsTypeName" label="类型名称" width="150" />
@@ -184,6 +184,19 @@ const rules = {
 const formatTime = (time) => {
   if (!time) return ''
   return time.replace('T', ' ').substring(0, 19)
+}
+
+const getPointsTypeText = (code) => {
+  const map = {
+    'daily_check_in': '每日打卡',
+    'continuous_streak_7': '连续7天打卡',
+    'continuous_streak_15': '连续15天打卡',
+    'continuous_streak_30': '连续30天打卡',
+    'goal_complete': '完成目标',
+    'achievement_reward': '勋章奖励',
+    'exchange': '积分兑换'
+  }
+  return map[code] || code
 }
 
 const fetchList = async () => {

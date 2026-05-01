@@ -74,7 +74,7 @@
         <el-table-column prop="pointsTypeName" label="类型" width="150">
           <template #default="{ row }">
             <el-tag :type="row.points > 0 ? 'success' : 'danger'">
-              {{ row.pointsTypeName || row.pointsType }}
+              {{ row.pointsTypeName || getPointsTypeText(row.pointsType) }}
             </el-tag>
           </template>
         </el-table-column>
@@ -106,6 +106,19 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { getPointsSummary, getPointsRecordList, getPointsConfigList } from '@/api/points'
+
+const getPointsTypeText = (code) => {
+  const map = {
+    'daily_check_in': '每日打卡',
+    'continuous_streak_7': '连续7天打卡',
+    'continuous_streak_15': '连续15天打卡',
+    'continuous_streak_30': '连续30天打卡',
+    'goal_complete': '完成目标',
+    'achievement_reward': '勋章奖励',
+    'exchange': '积分兑换'
+  }
+  return map[code] || code
+}
 
 const loading = ref(false)
 const dateRange = ref([])
